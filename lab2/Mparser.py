@@ -35,8 +35,6 @@ def p_instructions_opt_1(p):
 
 def p_instructions_opt_2(p):
     """instructions_opt : """
-def p_compound_statement(p):
-    """compound_statement : '{' instructions_opt '}'"""
 
 def p_instructions_1(p):
     """instructions : instructions instruction """
@@ -58,6 +56,9 @@ def p_instruction(p):
                    | print_statement
                    | compound_statement"""
     
+
+def p_compound_statement(p):
+    """compound_statement : '{' instructions_opt '}'"""
     
 def p_expression(p):
     """expression : expression '+' expression
@@ -79,7 +80,7 @@ def p_expression(p):
                   | ZEROS '(' expression ')'
                   | ONES '(' expression ')'
                   | EYE '(' expression ')'
-                  | expression ' 
+                  | expression 
                   | !expression
                   | '-' expression
                   | ID '[' expression_list ']'
@@ -120,10 +121,5 @@ def p_return_statement(p):
     """return_statement : RETURN expression"""
 def p_print_statement(p):
     """print_statement : PRINT expression_list"""
-
-
-
-    
-
 
 parser = yacc.yacc()

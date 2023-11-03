@@ -40,16 +40,14 @@ def t_ID(t):
     return t
 
 def t_FLOATNUM(t):
-    r'[0-9]+\.[0-9]*|[0-9]*\.[0-9]+|\d+e-?\d+'
+    r'\d+\.\d* | \d*\.\d+ | \d+e-?\d+'
     t.value = float(t.value)
     return t
 
 def t_INTNUM(t):
-    r'-?[0-9]+'
+    r'\d+'
     t.value = int(t.value)
     return t
-
-
 
 def t_STRING(t):
     r'\"([^\\\n]|(\\.))*?\"'
@@ -67,8 +65,6 @@ def t_COMMENT(t):
 def t_WHITE(t):
     r'[ \t]+'
     pass
-
-
 
 def t_error(t) :
     print ("Illegal character '%s'" , t.value[0])

@@ -1,4 +1,5 @@
 import ply.lex as lex
+
 reserved = {
     'if' : 'IF',
     'else' : 'ELSE',
@@ -31,7 +32,7 @@ t_MULASSIGN = r'\*='
 t_DIVASSIGN = r'/='
 t_LE = r'<='
 t_GE = r'>='
-t_NE = r'!='
+t_NE = r'!=' #1e-01
 t_EQ = r'=='
 
 def t_ID(t):
@@ -40,7 +41,7 @@ def t_ID(t):
     return t
 
 def t_FLOATNUM(t):
-    r'[0-9]+\.[0-9]*|[0-9]*\.[0-9]+'
+    r'([0-9]+\.[0-9]*|\.[0-9]+) | (\de-?\d+)' 
     t.value = float(t.value)
     return t
 
@@ -49,10 +50,9 @@ def t_INTNUM(t):
     t.value = int(t.value)
     return t
 
-
-
 def t_STRING(t):
-    r'\"([^\\\n]|(\\.))*?\"'
+    r'"([^\\\n]|(\\.))*?"'
+    #r'\"([^\\\n]|(\\.))*?\"'
     t.value = t.value[1:-1]
     return t
 
@@ -64,33 +64,10 @@ def t_COMMENT(t):
     r'\#.*'
     pass
 
-def t_WHITE(t):
-    r'[ \t]+'
-    pass
-
-# tokens = ('NUMBER', 'ID' )
-
-# literals = [ '+','-','*','/','(',')' ]
-
-# def t_NUMBER(t):
-#     r'\d+'
-#     t.value = int(t.value)
-#     return t
-
-# def t_ID(t):
-#     r'[a-zA-Z_]\w*'
-#     return t
-
 t_ignore = '  \t'
-
-# def t_newline(t):
-#     r'\n+'
-#     t.lexer.lineno += len(t.value)
 
 def t_error(t) :
     print ("Illegal character '%s'" , t.value[0])
     t.lexer.skip(1)
 
 lexer = lex.lex()
-
-
