@@ -7,25 +7,21 @@ import ply.yacc as yacc
 tokens = scanner.tokens
 
 precedence = (
-   # to fill ...
+   ('nonassoc', 'IFX'),
+   ('nonassoc', 'ELSE'),
+   ('nonassoc', '!'),
    ("left", '+', '-'),
    ("left", '*', '/'),
-   # to fill ...
+   ("left", 'DOTMUL', 'DOTDIV'),
+   ("left", 'DOTADD', 'DOTSUB'),
+   ("left", '<', '>', "NE", "GE", "LE", "EQ", ':')
 )
 
-# def p_expression_binop(p):
-# """expression  : expression ADD_OP expression
-#                | expression MUL_OP expression"""
-#     if p[2] == '+'   : p[0] = p[1] + p[3]
-#     elif p[2] == '-' : p[0] = p[1] - p[3]               
-#     elif p[2] == '*' : p[0] = p[1] * p[3]                         
-#     elif p[2] == '/' : p[0] = p[1] / p[3]  
 def p_error(p):
     if p:
         print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
     else:
         print("Unexpected end of input")
-
 
 def p_program(p):
     """program : instructions_opt"""
@@ -46,22 +42,22 @@ def p_instructions_2(p):
 # ....
 
 def p_instruction(p):
-    """instruction : expression NEWLINE
-                   | assignment NEWLINE
-                   | if_statement
+    """instruction : expression ';'
+                   | assignment ';'
+                   | if_statement 
                    | while_statement
-                   | break_statement
-                   | continue_statement
-                   | return_statement
-                   | print_statement
+                   | break_statement ';'
+                   | continue_statement ';'
+                   | return_statement ';'
+                   | print_statement ';'
+                   | for_statement
                    | compound_statement"""
-    
 
 def p_compound_statement(p):
-    """compound_statement : '{' instructions_opt '}'"""
+   """compound_statement : '{' instructions_opt '}'"""
     
 def p_expression(p):
-    """expression : expression '+' expression
+        """expression : expression '+' expression
                   | expression '-' expression
                   | expression '*' expression
                   | expression '/' expression
@@ -76,50 +72,53 @@ def p_expression(p):
                   | expression '<' expression
                   | expression '>' expression
                   | '(' expression ')'
-                  | '[' expresion_list ']'
+                  | '[' expression_list ']'
                   | ZEROS '(' expression ')'
                   | ONES '(' expression ')'
                   | EYE '(' expression ')'
-                  | expression 
-                  | !expression
+                  | '!' expression
                   | '-' expression
-                  | ID '[' expression_list ']'
                   | ID
+                  | ID '[' expression_list ']'
                   | INTNUM
                   | FLOATNUM
                   | STRING
+                  | expression '\\''
                   """
-    if p[2] == '+'   : p[0] = p[1] + p[3]
-    if p[2] == '-'   : p[0] = p[1] - p[3]
-    if p[2] == '*'   : p[0] = p[1] * p[3]
-    if p[2] == '/'   : p[0] = p[1] / p[3]
-    if p[2] == '.+'   : p[0] = p[1] + p[3]
+    #if p[2] == '+'   : p[0] = p[1] + p[3]
+    #if p[2] == '-'   : p[0] = p[1] - p[3]
+    #if p[2] == '*'   : p[0] = p[1] * p[3]
+    #if p[2] == '/'   : p[0] = p[1] / p[3]
+    #if p[2] == '.+'   : p[0] = p[1] + p[3]
 
-    
 def p_assigment(p):
-    """assignment : ID '=' expression
-                  | ID ADDASSIGN expression
-                  | ID SUBASSIGN expression
-                  | ID MULASSIGN expression
-                  | ID DIVASSIGN expression
-                  | ID '=' zeros_statement"""
+    """assignment : rvalue '=' expression
+                  | rvalue ADDASSIGN expression
+                  | rvalue SUBASSIGN expression
+                  | rvalue MULASSIGN expression
+                  | rvalue DIVASSIGN expression"""
+
+def p_rvalue(p):
+    """rvalue : ID 
+              | ID '[' expression_list ']' """
+
 def p_expression_list(p):
-    """expression_list : expression
-                       | expression_list ',' expression"""
+   """expression_list : expression
+                      | expression_list ',' expression"""
 def p_if_statement(p):
-    """if_statement : IF '(' expression ')' instruction %prec IFX
-                    | IF '(' expression ')' instruction ELSE instruction"""
+   """if_statement : IF '(' expression ')' instruction %prec IFX
+                   | IF '(' expression ')' instruction ELSE instruction"""
 def p_while_statement(p):
-    """while_statement : WHILE '(' expression ')' instruction"""
+   """while_statement : WHILE '(' expression ')' instruction"""
 def p_for_statement(p):
-    """for_statement : FOR ID '=' expression ':' expression"""
+   """for_statement : FOR ID '=' expression ':' expression instruction"""
 def p_break_statement(p):
-    """break_statement : BREAK"""
+   """break_statement : BREAK"""
 def p_continue_statement(p):
-    """continue_statement : CONTINUE"""
+   """continue_statement : CONTINUE"""
 def p_return_statement(p):
-    """return_statement : RETURN expression"""
+   """return_statement : RETURN expression"""
 def p_print_statement(p):
-    """print_statement : PRINT expression_list"""
+   """print_statement : PRINT expression_list"""
 
 parser = yacc.yacc()

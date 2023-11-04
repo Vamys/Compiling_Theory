@@ -10,6 +10,7 @@ reserved = {
     'eye' : 'EYE',
     'zeros' : 'ZEROS',
     'ones' : 'ONES',
+    'for' : 'FOR'
 }
 literals = ['+', '-', '*', '/', '(', ')', '[', ']', '{', '}', '=', '<', '>', ':', ',', ';', '\'']
 tokens = [
@@ -18,7 +19,7 @@ tokens = [
     'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN',
     'LE', 'GE', 'NE', 'EQ',
     'IF', 'ELSE', 'WHILE', 'PRINT', 'RETURN', 'BREAK', 'CONTINUE',
-    'EYE', 'ZEROS', 'ONES',
+    'EYE', 'ZEROS', 'ONES', 'FOR',
 ]
 
 t_DOTADD = r'.\+'
