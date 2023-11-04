@@ -46,13 +46,13 @@ Rule 40    expression -> INTNUM
 Rule 41    expression -> FLOATNUM
 Rule 42    expression -> STRING
 Rule 43    expression -> expression '
-Rule 44    assignment -> rvalue = expression
-Rule 45    assignment -> rvalue ADDASSIGN expression
-Rule 46    assignment -> rvalue SUBASSIGN expression
-Rule 47    assignment -> rvalue MULASSIGN expression
-Rule 48    assignment -> rvalue DIVASSIGN expression
-Rule 49    rvalue -> ID
-Rule 50    rvalue -> ID [ expression_list ]
+Rule 44    assignment -> lvalue = expression
+Rule 45    assignment -> lvalue ADDASSIGN expression
+Rule 46    assignment -> lvalue SUBASSIGN expression
+Rule 47    assignment -> lvalue MULASSIGN expression
+Rule 48    assignment -> lvalue DIVASSIGN expression
+Rule 49    lvalue -> ID
+Rule 50    lvalue -> ID [ expression_list ]
 Rule 51    expression_list -> expression
 Rule 52    expression_list -> expression_list , expression
 Rule 53    if_statement -> IF ( expression ) instruction
@@ -126,10 +126,10 @@ if_statement         : 8
 instruction          : 4 5 53 54 54 55 56
 instructions         : 2 4
 instructions_opt     : 1 16
+lvalue               : 44 45 46 47 48
 print_statement      : 13
 program              : 0
 return_statement     : 12
-rvalue               : 44 45 46 47 48
 while_statement      : 9
 
 Parsing method: LALR
@@ -179,11 +179,11 @@ state 0
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -193,8 +193,8 @@ state 0
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     $end            reduce using rule 3 (instructions_opt -> .)
     (               shift and go to state 16
@@ -231,7 +231,7 @@ state 0
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 1
 
@@ -287,11 +287,11 @@ state 3
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -301,8 +301,8 @@ state 3
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     $end            reduce using rule 2 (instructions_opt -> instructions .)
     }               reduce using rule 2 (instructions_opt -> instructions .)
@@ -337,7 +337,7 @@ state 3
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 4
 
@@ -758,8 +758,8 @@ state 22
 
     (38) expression -> ID .
     (39) expression -> ID . [ expression_list ]
-    (49) rvalue -> ID .
-    (50) rvalue -> ID . [ expression_list ]
+    (49) lvalue -> ID .
+    (50) lvalue -> ID . [ expression_list ]
 
     ;               reduce using rule 38 (expression -> ID .)
     +               reduce using rule 38 (expression -> ID .)
@@ -778,11 +778,11 @@ state 22
     >               reduce using rule 38 (expression -> ID .)
     '               reduce using rule 38 (expression -> ID .)
     [               shift and go to state 66
-    =               reduce using rule 49 (rvalue -> ID .)
-    ADDASSIGN       reduce using rule 49 (rvalue -> ID .)
-    SUBASSIGN       reduce using rule 49 (rvalue -> ID .)
-    MULASSIGN       reduce using rule 49 (rvalue -> ID .)
-    DIVASSIGN       reduce using rule 49 (rvalue -> ID .)
+    =               reduce using rule 49 (lvalue -> ID .)
+    ADDASSIGN       reduce using rule 49 (lvalue -> ID .)
+    SUBASSIGN       reduce using rule 49 (lvalue -> ID .)
+    MULASSIGN       reduce using rule 49 (lvalue -> ID .)
+    DIVASSIGN       reduce using rule 49 (lvalue -> ID .)
 
 
 state 23
@@ -919,11 +919,11 @@ state 25
 
 state 26
 
-    (44) assignment -> rvalue . = expression
-    (45) assignment -> rvalue . ADDASSIGN expression
-    (46) assignment -> rvalue . SUBASSIGN expression
-    (47) assignment -> rvalue . MULASSIGN expression
-    (48) assignment -> rvalue . DIVASSIGN expression
+    (44) assignment -> lvalue . = expression
+    (45) assignment -> lvalue . ADDASSIGN expression
+    (46) assignment -> lvalue . SUBASSIGN expression
+    (47) assignment -> lvalue . MULASSIGN expression
+    (48) assignment -> lvalue . DIVASSIGN expression
 
     =               shift and go to state 67
     ADDASSIGN       shift and go to state 68
@@ -1105,11 +1105,11 @@ state 34
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -1119,8 +1119,8 @@ state 34
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     }               reduce using rule 3 (instructions_opt -> .)
     (               shift and go to state 16
@@ -1156,7 +1156,7 @@ state 34
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 35
 
@@ -2448,7 +2448,7 @@ state 65
 state 66
 
     (39) expression -> ID [ . expression_list ]
-    (50) rvalue -> ID [ . expression_list ]
+    (50) lvalue -> ID [ . expression_list ]
     (51) expression_list -> . expression
     (52) expression_list -> . expression_list , expression
     (17) expression -> . expression + expression
@@ -2496,7 +2496,7 @@ state 66
 
 state 67
 
-    (44) assignment -> rvalue = . expression
+    (44) assignment -> lvalue = . expression
     (17) expression -> . expression + expression
     (18) expression -> . expression - expression
     (19) expression -> . expression * expression
@@ -2541,7 +2541,7 @@ state 67
 
 state 68
 
-    (45) assignment -> rvalue ADDASSIGN . expression
+    (45) assignment -> lvalue ADDASSIGN . expression
     (17) expression -> . expression + expression
     (18) expression -> . expression - expression
     (19) expression -> . expression * expression
@@ -2586,7 +2586,7 @@ state 68
 
 state 69
 
-    (46) assignment -> rvalue SUBASSIGN . expression
+    (46) assignment -> lvalue SUBASSIGN . expression
     (17) expression -> . expression + expression
     (18) expression -> . expression - expression
     (19) expression -> . expression * expression
@@ -2631,7 +2631,7 @@ state 69
 
 state 70
 
-    (47) assignment -> rvalue MULASSIGN . expression
+    (47) assignment -> lvalue MULASSIGN . expression
     (17) expression -> . expression + expression
     (18) expression -> . expression - expression
     (19) expression -> . expression * expression
@@ -2676,7 +2676,7 @@ state 70
 
 state 71
 
-    (48) assignment -> rvalue DIVASSIGN . expression
+    (48) assignment -> lvalue DIVASSIGN . expression
     (17) expression -> . expression + expression
     (18) expression -> . expression - expression
     (19) expression -> . expression * expression
@@ -4215,7 +4215,7 @@ state 98
 state 99
 
     (39) expression -> ID [ expression_list . ]
-    (50) rvalue -> ID [ expression_list . ]
+    (50) lvalue -> ID [ expression_list . ]
     (52) expression_list -> expression_list . , expression
 
     ]               shift and go to state 114
@@ -4224,7 +4224,7 @@ state 99
 
 state 100
 
-    (44) assignment -> rvalue = expression .
+    (44) assignment -> lvalue = expression .
     (17) expression -> expression . + expression
     (18) expression -> expression . - expression
     (19) expression -> expression . * expression
@@ -4241,7 +4241,7 @@ state 100
     (30) expression -> expression . > expression
     (43) expression -> expression . '
 
-    ;               reduce using rule 44 (assignment -> rvalue = expression .)
+    ;               reduce using rule 44 (assignment -> lvalue = expression .)
     +               shift and go to state 37
     -               shift and go to state 38
     *               shift and go to state 39
@@ -4261,7 +4261,7 @@ state 100
 
 state 101
 
-    (45) assignment -> rvalue ADDASSIGN expression .
+    (45) assignment -> lvalue ADDASSIGN expression .
     (17) expression -> expression . + expression
     (18) expression -> expression . - expression
     (19) expression -> expression . * expression
@@ -4278,7 +4278,7 @@ state 101
     (30) expression -> expression . > expression
     (43) expression -> expression . '
 
-    ;               reduce using rule 45 (assignment -> rvalue ADDASSIGN expression .)
+    ;               reduce using rule 45 (assignment -> lvalue ADDASSIGN expression .)
     +               shift and go to state 37
     -               shift and go to state 38
     *               shift and go to state 39
@@ -4298,7 +4298,7 @@ state 101
 
 state 102
 
-    (46) assignment -> rvalue SUBASSIGN expression .
+    (46) assignment -> lvalue SUBASSIGN expression .
     (17) expression -> expression . + expression
     (18) expression -> expression . - expression
     (19) expression -> expression . * expression
@@ -4315,7 +4315,7 @@ state 102
     (30) expression -> expression . > expression
     (43) expression -> expression . '
 
-    ;               reduce using rule 46 (assignment -> rvalue SUBASSIGN expression .)
+    ;               reduce using rule 46 (assignment -> lvalue SUBASSIGN expression .)
     +               shift and go to state 37
     -               shift and go to state 38
     *               shift and go to state 39
@@ -4335,7 +4335,7 @@ state 102
 
 state 103
 
-    (47) assignment -> rvalue MULASSIGN expression .
+    (47) assignment -> lvalue MULASSIGN expression .
     (17) expression -> expression . + expression
     (18) expression -> expression . - expression
     (19) expression -> expression . * expression
@@ -4352,7 +4352,7 @@ state 103
     (30) expression -> expression . > expression
     (43) expression -> expression . '
 
-    ;               reduce using rule 47 (assignment -> rvalue MULASSIGN expression .)
+    ;               reduce using rule 47 (assignment -> lvalue MULASSIGN expression .)
     +               shift and go to state 37
     -               shift and go to state 38
     *               shift and go to state 39
@@ -4372,7 +4372,7 @@ state 103
 
 state 104
 
-    (48) assignment -> rvalue DIVASSIGN expression .
+    (48) assignment -> lvalue DIVASSIGN expression .
     (17) expression -> expression . + expression
     (18) expression -> expression . - expression
     (19) expression -> expression . * expression
@@ -4389,7 +4389,7 @@ state 104
     (30) expression -> expression . > expression
     (43) expression -> expression . '
 
-    ;               reduce using rule 48 (assignment -> rvalue DIVASSIGN expression .)
+    ;               reduce using rule 48 (assignment -> lvalue DIVASSIGN expression .)
     +               shift and go to state 37
     -               shift and go to state 38
     *               shift and go to state 39
@@ -4738,7 +4738,7 @@ state 113
 state 114
 
     (39) expression -> ID [ expression_list ] .
-    (50) rvalue -> ID [ expression_list ] .
+    (50) lvalue -> ID [ expression_list ] .
 
     ;               reduce using rule 39 (expression -> ID [ expression_list ] .)
     +               reduce using rule 39 (expression -> ID [ expression_list ] .)
@@ -4756,11 +4756,11 @@ state 114
     <               reduce using rule 39 (expression -> ID [ expression_list ] .)
     >               reduce using rule 39 (expression -> ID [ expression_list ] .)
     '               reduce using rule 39 (expression -> ID [ expression_list ] .)
-    =               reduce using rule 50 (rvalue -> ID [ expression_list ] .)
-    ADDASSIGN       reduce using rule 50 (rvalue -> ID [ expression_list ] .)
-    SUBASSIGN       reduce using rule 50 (rvalue -> ID [ expression_list ] .)
-    MULASSIGN       reduce using rule 50 (rvalue -> ID [ expression_list ] .)
-    DIVASSIGN       reduce using rule 50 (rvalue -> ID [ expression_list ] .)
+    =               reduce using rule 50 (lvalue -> ID [ expression_list ] .)
+    ADDASSIGN       reduce using rule 50 (lvalue -> ID [ expression_list ] .)
+    SUBASSIGN       reduce using rule 50 (lvalue -> ID [ expression_list ] .)
+    MULASSIGN       reduce using rule 50 (lvalue -> ID [ expression_list ] .)
+    DIVASSIGN       reduce using rule 50 (lvalue -> ID [ expression_list ] .)
 
 
 state 115
@@ -4804,11 +4804,11 @@ state 115
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -4818,8 +4818,8 @@ state 115
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     (               shift and go to state 16
     [               shift and go to state 17
@@ -4852,7 +4852,7 @@ state 115
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 116
 
@@ -4894,11 +4894,11 @@ state 116
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -4908,8 +4908,8 @@ state 116
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     (               shift and go to state 16
     [               shift and go to state 17
@@ -4942,7 +4942,7 @@ state 116
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 117
 
@@ -5169,11 +5169,11 @@ state 122
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -5183,8 +5183,8 @@ state 122
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     (               shift and go to state 16
     [               shift and go to state 17
@@ -5217,7 +5217,7 @@ state 122
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 123
 
@@ -5274,11 +5274,11 @@ state 123
     (41) expression -> . FLOATNUM
     (42) expression -> . STRING
     (43) expression -> . expression '
-    (44) assignment -> . rvalue = expression
-    (45) assignment -> . rvalue ADDASSIGN expression
-    (46) assignment -> . rvalue SUBASSIGN expression
-    (47) assignment -> . rvalue MULASSIGN expression
-    (48) assignment -> . rvalue DIVASSIGN expression
+    (44) assignment -> . lvalue = expression
+    (45) assignment -> . lvalue ADDASSIGN expression
+    (46) assignment -> . lvalue SUBASSIGN expression
+    (47) assignment -> . lvalue MULASSIGN expression
+    (48) assignment -> . lvalue DIVASSIGN expression
     (53) if_statement -> . IF ( expression ) instruction
     (54) if_statement -> . IF ( expression ) instruction ELSE instruction
     (55) while_statement -> . WHILE ( expression ) instruction
@@ -5288,8 +5288,8 @@ state 123
     (60) print_statement -> . PRINT expression_list
     (56) for_statement -> . FOR ID = expression : expression instruction
     (16) compound_statement -> . { instructions_opt }
-    (49) rvalue -> . ID
-    (50) rvalue -> . ID [ expression_list ]
+    (49) lvalue -> . ID
+    (50) lvalue -> . ID [ expression_list ]
 
     +               shift and go to state 37
     -               shift and go to state 126
@@ -5336,7 +5336,7 @@ state 123
     print_statement                shift and go to state 12
     for_statement                  shift and go to state 13
     compound_statement             shift and go to state 14
-    rvalue                         shift and go to state 26
+    lvalue                         shift and go to state 26
 
 state 124
 

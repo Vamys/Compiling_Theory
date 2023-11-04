@@ -41,7 +41,7 @@ def t_ID(t):
     return t
 
 def t_FLOATNUM(t):
-    r'\d+\.\d* | \d*\.\d+ | \d+e-?\d+'
+    r' (\d+\.\d* | \d*\.\d+)(E-?\d+)?'
     t.value = float(t.value)
     return t
 

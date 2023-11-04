@@ -92,32 +92,39 @@ def p_expression(p):
     #if p[2] == '.+'   : p[0] = p[1] + p[3]
 
 def p_assigment(p):
-    """assignment : rvalue '=' expression
-                  | rvalue ADDASSIGN expression
-                  | rvalue SUBASSIGN expression
-                  | rvalue MULASSIGN expression
-                  | rvalue DIVASSIGN expression"""
+    """assignment : lvalue '=' expression
+                  | lvalue ADDASSIGN expression
+                  | lvalue SUBASSIGN expression
+                  | lvalue MULASSIGN expression
+                  | lvalue DIVASSIGN expression"""
 
-def p_rvalue(p):
-    """rvalue : ID 
+def p_lvalue(p):
+    """lvalue : ID 
               | ID '[' expression_list ']' """
 
 def p_expression_list(p):
    """expression_list : expression
                       | expression_list ',' expression"""
+   
 def p_if_statement(p):
    """if_statement : IF '(' expression ')' instruction %prec IFX
                    | IF '(' expression ')' instruction ELSE instruction"""
+   
 def p_while_statement(p):
    """while_statement : WHILE '(' expression ')' instruction"""
+
 def p_for_statement(p):
    """for_statement : FOR ID '=' expression ':' expression instruction"""
+
 def p_break_statement(p):
    """break_statement : BREAK"""
+
 def p_continue_statement(p):
    """continue_statement : CONTINUE"""
+
 def p_return_statement(p):
    """return_statement : RETURN expression"""
+   
 def p_print_statement(p):
    """print_statement : PRINT expression_list"""
 
