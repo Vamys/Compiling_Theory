@@ -10,11 +10,15 @@ precedence = (
    ('nonassoc', 'IFX'),
    ('nonassoc', 'ELSE'),
    ('nonassoc', '!'),
-   ("left", '+', '-'),
    ("left", '*', '/'),
+   ("left", '+', '-'),
    ("left", 'DOTMUL', 'DOTDIV'),
    ("left", 'DOTADD', 'DOTSUB'),
-   ("left", '<', '>', "NE", "GE", "LE", "EQ", ':')
+   ("left", '<', '>', "NE", "GE", "LE", "EQ"),
+   ('right', ':'),
+   ("right", 'ID'),
+   ('right', 'UMINUS'),
+   ('left', '\''),
 )
 
 def p_error(p):
@@ -38,28 +42,25 @@ def p_instructions_1(p):
 def p_instructions_2(p):
     """instructions : instruction """
 
-# to finish the grammar
-# ....
-
 def p_instruction(p):
     """instruction : expression ';'
                    | assignment ';'
-                   | if_statement 
-                   | while_statement
                    | break_statement ';'
                    | continue_statement ';'
                    | return_statement ';'
                    | print_statement ';'
                    | for_statement
-                   | compound_statement"""
+                   | compound_statement
+                   | if_statement 
+                   | while_statement"""
 
 def p_compound_statement(p):
    """compound_statement : '{' instructions_opt '}'"""
     
 def p_expression(p):
         """expression : expression '+' expression
-                  | expression '-' expression
                   | expression '*' expression
+                  | expression '-' expression
                   | expression '/' expression
                   | expression DOTADD expression
                   | expression DOTSUB expression
@@ -77,7 +78,7 @@ def p_expression(p):
                   | ONES '(' expression ')'
                   | EYE '(' expression ')'
                   | '!' expression
-                  | '-' expression
+                  | '-' expression %prec UMINUS
                   | ID
                   | ID '[' expression_list ']'
                   | INTNUM
@@ -85,12 +86,7 @@ def p_expression(p):
                   | STRING
                   | expression '\\''
                   """
-    #if p[2] == '+'   : p[0] = p[1] + p[3]
-    #if p[2] == '-'   : p[0] = p[1] - p[3]
-    #if p[2] == '*'   : p[0] = p[1] * p[3]
-    #if p[2] == '/'   : p[0] = p[1] / p[3]
-    #if p[2] == '.+'   : p[0] = p[1] + p[3]
-
+        
 def p_assigment(p):
     """assignment : lvalue '=' expression
                   | lvalue ADDASSIGN expression
@@ -113,8 +109,11 @@ def p_if_statement(p):
 def p_while_statement(p):
    """while_statement : WHILE '(' expression ')' instruction"""
 
+def p_range(p):
+    """range : expression ':' expression """
+
 def p_for_statement(p):
-   """for_statement : FOR ID '=' expression ':' expression instruction"""
+   """for_statement : FOR ID '=' range instruction"""
 
 def p_break_statement(p):
    """break_statement : BREAK"""
@@ -123,7 +122,8 @@ def p_continue_statement(p):
    """continue_statement : CONTINUE"""
 
 def p_return_statement(p):
-   """return_statement : RETURN expression"""
+   """return_statement : RETURN expression
+                       | RETURN"""
    
 def p_print_statement(p):
    """print_statement : PRINT expression_list"""
