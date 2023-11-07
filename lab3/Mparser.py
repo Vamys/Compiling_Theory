@@ -2,7 +2,7 @@
 
 import scanner
 import ply.yacc as yacc
-
+import scanner
 
 tokens = scanner.tokens
 
