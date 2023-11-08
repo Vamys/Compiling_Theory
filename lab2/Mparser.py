@@ -9,14 +9,12 @@ tokens = scanner.tokens
 precedence = ( 
    ('nonassoc', 'IFX'),
    ('nonassoc', 'ELSE'),
-   ('nonassoc', '!'),
-   ("left", '*', '/'),
+   ("left", '<', '>', "NE", "GE", "LE", "EQ"),
+   ("left", 'DOTADD', 'DOTSUB'),
    ("left", '+', '-'),
    ("left", 'DOTMUL', 'DOTDIV'),
-   ("left", 'DOTADD', 'DOTSUB'),
-   ("left", '<', '>', "NE", "GE", "LE", "EQ"),
-   ('right', ':'),
-   ("right", 'ID'),
+   ("left", '*', '/'),
+   ('nonassoc', '!'),
    ('right', 'UMINUS'),
    ('left', '\''),
 )
