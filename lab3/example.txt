@@ -1,4 +1,3 @@
-
 A = .1E-10;
 
 A = "asdfasdfasdf \"sdfsdf\" ";

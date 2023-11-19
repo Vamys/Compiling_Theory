@@ -8,17 +8,18 @@ import AST
 tokens = scanner.tokens
 
 precedence = ( 
-   ('nonassoc', 'IFX'),
-   ('nonassoc', 'ELSE'),
-   ("left", '<', '>', "NE", "GE", "LE", "EQ"),
-   ("left", 'DOTADD', 'DOTSUB'),
-   ("left", '+', '-'),
-   ("left", 'DOTMUL', 'DOTDIV'),
-   ("left", '*', '/'),
-   ('nonassoc', '!'),
-   ('right', 'UMINUS'),
-   ('left', '\''),
+    ('nonassoc', 'IFX'),
+    ('nonassoc', 'ELSE'),
+    ("left", '<', '>', "NE", "GE", "LE", "EQ"),
+    ("left", 'DOTADD', 'DOTSUB'),
+    ("left", '+', '-'),
+    ("left", 'DOTMUL', 'DOTDIV'),
+    ("left", '*', '/'),
+    ('nonassoc', '!'),
+    ('right', 'UMINUS'),
+    ('left', '\''),
 )
+operators = set(['+', '-', '*', '/', '==', '<', '>', '!=', '>=', '<=', '+=', '-=', '*=', '/=', '\'','.+','.-','.*','./'])
 
 def p_error(p):
     if p:
@@ -36,7 +37,7 @@ def p_instructions_opt_1(p):
 
 def p_instructions_opt_2(p):
     """instructions_opt : """
-    p[0] = AST.Instructions(None)
+    p[0] = AST.ListInstr(None)
     
 
 def p_instructions_1(p):
@@ -89,6 +90,7 @@ def p_expression(p):
                   | '-' expression %prec UMINUS
                   | ID
                   | ID '[' expression_list ']'
+                  | ID '[' expression ']'
                   | INTNUM
                   | FLOATNUM
                   | STRING
@@ -99,12 +101,28 @@ def p_expression(p):
             p[0] = AST.BreakStmt() if p[1] == 'break' else AST.ContinueStmt()
         elif p[1] == 'return':
             p[0] = AST.ReturnStmt(None)
+        elif type(p[1]) == float:
+            p[0] = AST.FloatNum(p[1])
+        elif type(p[1]) == int:
+            p[0] = AST.IntNum(p[1])
+        elif p[1] in operators: #nie wiem czy to tu ma byc
+            p[0] = AST.Op(p[1])
         else:
-            p[0] = p[1]
+            p[0] = AST.Variable(p[1])
     elif len(p) == 3:
-        p[0] = AST.UnaryExpr(p[1], p[2])
+        if p[1] == '!' or p[1] == '-':
+            p[0] = AST.UnaryExpr(p[2], p[1]) #operator on the left
+        else:
+            p[0] = AST.UnaryExpr(p[1], p[2])
     elif len(p) == 4:
-        p[0] = AST.BinExpr(p[2], p[1], p[3])
+        if p[1] == '(':
+            p[0] = p[2]
+        elif p[1] == '[':
+            p[0] = AST.List(p[2])
+        else:
+            p[0] = AST.BinExpr(p[2], p[1], p[3])
+    elif len(p) == 5:
+        p[0] = AST.MatrixCreate(p[1], p[3])
 def p_assigment(p):
     """assignment : lvalue '=' expression
                   | lvalue ADDASSIGN expression
@@ -115,14 +133,16 @@ def p_assigment(p):
 
 def p_lvalue(p):
     """lvalue : ID 
-              | ID '[' expression_list ']' """
+              | ID '[' expression_list ']' 
+              | ID '[' expression ']'"""
     p[0] = AST.Variable(p[1]) if len(p) == 2 else AST.Array(p[1], p[3])
 
 def p_expression_list(p):
-    """expression_list : expression
-                        | expression_list ',' expression"""
-    if len(p) == 2:
+    """expression_list : expression_list ',' expression
+                        | expression ',' expression"""
+    if type(p[1]) != AST.ListExpr:
         p[0] = AST.ListExpr(p[1])
+        p[0].add(p[3])
     else:
        p[1].add(p[3])
        p[0] = p[1]
@@ -142,10 +162,10 @@ def p_while_statement(p):
 
 def p_range(p):
     """range : expression ':' expression """
-    p[0] = AST.Range(p[1], p[3])
+    p[0] = AST.RangeExpr(p[1], p[3])
 
 def p_for_statement(p):
-   """for_statement : FOR ID '=' range instruction"""
+   """for_statement : FOR lvalue '=' range instruction""" #not sure
    p[0] = AST.ForExpr(p[2], p[4], p[5])
 
 def p_break_statement(p):
@@ -162,7 +182,8 @@ def p_return_statement(p):
    p[0] = AST.ReturnStmt(p[2]) if len(p) > 2 else AST.ReturnStmt(None)
    
 def p_print_statement(p):
-   """print_statement : PRINT expression_list"""
+   """print_statement : PRINT expression_list
+                      | PRINT expression"""
    p[0] = AST.PrintStmt(p[2])
 
 parser = yacc.yacc()

@@ -9,6 +9,9 @@ class FloatNum(Node):
     def __init__(self, value):
         self.value = value
 
+class Op(Node):
+    def __init__(self, op):
+        self.op = op
 
 class Variable(Node):
     def __init__(self, name):
@@ -26,7 +29,7 @@ class BinExpr(Node):
         self.right = right
 
 class UnaryExpr(Node):
-    def __init__(self, op, left):
+    def __init__(self, left,op):
         self.op = op
         self.left = left
 
@@ -88,18 +91,31 @@ class RangeExpr(Node):
         self.end = end
 
 class ListExpr(Node):
-    def __init__(self, expr):
-        self.expr = [expr]
-    def add(self, expr):
-        self.expr.append(expr)
+    def __init__(self, expr_):
+        self.expr = [expr_]
+    def add(self, new_expr):
+        self.expr.append(new_expr)
 
 class ListInstr(Node):
     def __init__(self, instr):
         self.instr = [instr]
-    def add(self, instr):
-        self.instr.append(instr)
+    def add(self, new_instr):
+        self.instr.append(new_instr)
 
+class MatrixCreate(Node):
+    def __init__(self, type , size):
+        self.type = type
+        self.size = size
+class Transposition(Node):
+    def __init__(self, expr):
+        self.expr = expr
+
+class List(Node):
+    def __init__(self, expr):
+        self.expr = expr
 class Error(Node):
     def __init__(self):
         pass
+
+
       

@@ -66,9 +66,14 @@ class TreePrinter:
         self.cond.printTree(indent+1)
         print("| " * indent + "THEN")
         self.true.printTree(indent+1)
+    @addToClass(AST.IfElseExpr)
+    def printTree(self, indent=0):
+        print("| " * indent + "IF")
+        self.cond.printTree(indent+1)
+        print("| " * indent + "THEN")
+        self.true.printTree(indent+1)
         print("| " * indent + "ELSE")
         self.false.printTree(indent+1)
-
     @addToClass(AST.WhileExpr)
     def printTree(self, indent=0):
         print("| " * indent + "WHILE")
@@ -85,18 +90,11 @@ class TreePrinter:
         print("| " * indent + "DO")
         self.body.printTree(indent+1)
     
-    @addToClass(AST.Range)
+    @addToClass(AST.RangeExpr)
     def printTree(self, indent=0):
         print("| " * indent + "RANGE")
         self.start.printTree(indent+1)
         self.end.printTree(indent+1)
-    
-    @addToClass(AST.RangeStep)
-    def printTree(self, indent=0):
-        print("| " * indent + "RANGE")
-        self.start.printTree(indent+1)
-        self.end.printTree(indent+1)
-        self.step.printTree(indent+1)
     
     @addToClass(AST.BreakStmt)
     def printTree(self, indent=0):
@@ -116,23 +114,37 @@ class TreePrinter:
         print("| " * indent + "COMPOUND")
         self.expr.printTree(indent+1)
 
-    @addToClass(AST.Program)
+    @addToClass(AST.ListExpr)
     def printTree(self, indent=0):
-        print("| " * indent + "PROGRAM")
+        print("| " * indent + "LIST EXPR")
+        for expr in self.expr:
+            expr.printTree(indent+1)
+
+    @addToClass(AST.ListInstr)
+    def printTree(self, indent=0):
+        print("| " * indent + "LIST INSTR")
+        for expr in self.instr:
+            expr.printTree(indent+1)
+
+    @addToClass(AST.ReturnStmt)
+    def printTree(self, indent=0):
+        print("| " * indent + "RETURN")
         self.expr.printTree(indent+1)
-
-    @addToClass(AST.Statements)
+    
+    @addToClass(AST.Op)
     def printTree(self, indent=0):
-        print("| " * indent + "STATEMENTS")
-        for expr in self.expr:
-            expr.printTree(indent+1)
-    @addToClass(AST.Expressions)
+        print("| " * indent + str(self.op))\
+        
+    @addToClass(AST.MatrixCreate)
     def printTree(self, indent=0):
-        print("| " * indent + "EXPRESSIONS")
-        for expr in self.expr:
-            expr.printTree(indent+1)
+        print("| " * indent + str(self.type))
+        self.size.printTree(indent+1)
 
-
+    @addToClass(AST.List)
+    def printTree(self, indent=0):
+        print("| " * indent + "[")
+        self.expr.printTree(indent+1)
+        print("| " * indent + "]")
     # define printTree for other classes
     # ...
 
