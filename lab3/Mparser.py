@@ -98,16 +98,10 @@ def p_expression(p):
                   | expression '\\'' 
                   """
     if len(p) == 2:
-        if p[1] == 'break' or p[1] == 'continue':
-            p[0] = AST.BreakStmt() if p[1] == 'break' else AST.ContinueStmt()
-        elif p[1] == 'return':
-            p[0] = AST.ReturnStmt(None)
-        elif type(p[1]) == float:
+        if type(p[1]) == float:
             p[0] = AST.FloatNum(p[1])
         elif type(p[1]) == int:
             p[0] = AST.IntNum(p[1])
-        elif p[1] in operators: #nie wiem czy to tu ma byc
-            p[0] = AST.Op(p[1])
         else:
             p[0] = AST.Variable(p[1])    
     elif len(p) == 3:
@@ -124,6 +118,8 @@ def p_expression(p):
             p[0] = AST.BinExpr(p[2], p[1], p[3])
     elif len(p) == 5:
         p[0] = AST.MatrixCreate(p[1], p[3])
+
+
 def p_assigment(p):
     """assignment : lvalue '=' expression
                   | lvalue ADDASSIGN expression
