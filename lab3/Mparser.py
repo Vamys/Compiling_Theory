@@ -16,8 +16,10 @@ precedence = (
     ("left", 'DOTMUL', 'DOTDIV'),
     ("left", '*', '/'),
     ('nonassoc', '!'),
+    ('right', ':'),
+    ("right", 'ID', '['),
     ('right', 'UMINUS'),
-    ('left', '\''),
+    ('left', '\'') ,
 )
 operators = set(['+', '-', '*', '/', '==', '<', '>', '!=', '>=', '<=', '+=', '-=', '*=', '/=', '\'','.+','.-','.*','./'])
 
@@ -28,7 +30,7 @@ def p_error(p):
         print("Unexpected end of input")
 
 def p_program(p):
-    """program : instructions_opt """
+    """program : instructions_opt"""
     p[0] = p[1]
 
 def p_instructions_opt_1(p):
@@ -90,11 +92,10 @@ def p_expression(p):
                   | '-' expression %prec UMINUS
                   | ID
                   | ID '[' expression_list ']'
-                  | ID '[' expression ']'
                   | INTNUM
                   | FLOATNUM
                   | STRING
-                  | expression '\\''
+                  | expression '\\'' 
                   """
     if len(p) == 2:
         if p[1] == 'break' or p[1] == 'continue':
@@ -108,7 +109,7 @@ def p_expression(p):
         elif p[1] in operators: #nie wiem czy to tu ma byc
             p[0] = AST.Op(p[1])
         else:
-            p[0] = AST.Variable(p[1])
+            p[0] = AST.Variable(p[1])    
     elif len(p) == 3:
         if p[1] == '!' or p[1] == '-':
             p[0] = AST.UnaryExpr(p[2], p[1]) #operator on the left
@@ -132,20 +133,20 @@ def p_assigment(p):
     p[0] = AST.AssignExpr(p[2], p[1], p[3])
 
 def p_lvalue(p):
-    """lvalue : ID 
+    """lvalue : ID
               | ID '[' expression_list ']' 
-              | ID '[' expression ']'"""
-    p[0] = AST.Variable(p[1]) if len(p) == 2 else AST.Array(p[1], p[3])
+              """
+    p[0] = AST.Variable(p[1]) if len(p) == 2 else AST.ArrayElement(AST.Variable(p[1]), p[3])
 
 def p_expression_list(p):
-    """expression_list : expression_list ',' expression
-                        | expression ',' expression"""
-    if type(p[1]) != AST.ListExpr:
+    """expression_list : expression
+                       | expression_list ',' expression
+                        """ 
+    if len(p) == 2:
         p[0] = AST.ListExpr(p[1])
-        p[0].add(p[3])
     else:
-       p[1].add(p[3])
-       p[0] = p[1]
+        p[1].add(p[3])
+        p[0] = p[1]
    
 def p_if_statement(p):
     """if_statement : IF '(' expression ')' instruction %prec IFX
@@ -165,8 +166,8 @@ def p_range(p):
     p[0] = AST.RangeExpr(p[1], p[3])
 
 def p_for_statement(p):
-   """for_statement : FOR lvalue '=' range instruction""" #not sure
-   p[0] = AST.ForExpr(p[2], p[4], p[5])
+   """for_statement : FOR ID '=' range instruction""" 
+   p[0] = AST.ForExpr(AST.Variable(p[2]), p[4], p[5])
 
 def p_break_statement(p):
    """break_statement : BREAK"""
@@ -183,7 +184,7 @@ def p_return_statement(p):
    
 def p_print_statement(p):
    """print_statement : PRINT expression_list
-                      | PRINT expression"""
+                      """
    p[0] = AST.PrintStmt(p[2])
 
 parser = yacc.yacc()

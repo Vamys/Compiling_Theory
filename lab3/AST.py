@@ -17,7 +17,7 @@ class Variable(Node):
     def __init__(self, name):
         self.name = name
 
-class Array(Node):
+class ArrayElement(Node):
     def __init__(self, name, indices):
         self.name = name
         self.indices = indices

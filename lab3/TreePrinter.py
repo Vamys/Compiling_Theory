@@ -32,9 +32,10 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + str(self.name))
     
-    @addToClass(AST.Array)
+    @addToClass(AST.ArrayElement)
     def printTree(self, indent=0):
-        print("| " * indent + str(self.name))
+        print("| " * indent + "ARRAY ELEMENT")
+        self.name.printTree(indent + 1)
         self.indices.printTree(indent+1)
     
     @addToClass(AST.BinExpr)
@@ -78,16 +79,13 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + "WHILE")
         self.cond.printTree(indent+1)
-        print("| " * indent + "DO")
         self.body.printTree(indent+1)
 
     @addToClass(AST.ForExpr)
     def printTree(self, indent=0):
         print("| " * indent + "FOR")
         self.var.printTree(indent+1)
-        print("| " * indent + "RANGE")
         self.range.printTree(indent+1)
-        print("| " * indent + "DO")
         self.body.printTree(indent+1)
     
     @addToClass(AST.RangeExpr)
@@ -116,15 +114,13 @@ class TreePrinter:
 
     @addToClass(AST.ListExpr)
     def printTree(self, indent=0):
-        print("| " * indent + "LIST EXPR")
         for expr in self.expr:
-            expr.printTree(indent+1)
+            expr.printTree(indent)
 
     @addToClass(AST.ListInstr)
     def printTree(self, indent=0):
-        print("| " * indent + "LIST INSTR")
         for expr in self.instr:
-            expr.printTree(indent+1)
+            expr.printTree(indent)
 
     @addToClass(AST.ReturnStmt)
     def printTree(self, indent=0):
@@ -142,9 +138,5 @@ class TreePrinter:
 
     @addToClass(AST.List)
     def printTree(self, indent=0):
-        print("| " * indent + "[")
+        print("| " * indent + "LIST")
         self.expr.printTree(indent+1)
-        print("| " * indent + "]")
-    # define printTree for other classes
-    # ...
-
