@@ -1,3 +1,21 @@
+from enum import Enum, auto
+
+class Type(Enum):
+    INTNUM = auto()
+    FLOATNUM = auto()
+    STRING = auto()
+    LIST = auto()
+    MATRIX = auto()
+    BOOLEAN = auto()
+    RANGE = auto()
+    NULL = auto()
+    UNKNOWN = auto()
+    # @staticmethod
+    # def is_number(mtype):
+    #     return mtype in [Type.FLOAT, Type.INTNUM]
+
+class Symbol:
+    pass
 
 class VariableSymbol(Symbol):
 

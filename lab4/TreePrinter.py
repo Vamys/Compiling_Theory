@@ -2,7 +2,6 @@ from __future__ import print_function
 import AST
 
 def addToClass(cls):
-
     def decorator(func):
         setattr(cls,func.__name__,func)
         return func
@@ -49,11 +48,11 @@ class TreePrinter:
         print("| " * indent + str(self.op))
         self.left.printTree(indent+1)
 
-    @addToClass(AST.RelExpr)
-    def printTree(self, indent=0):
-        print("| " * indent + str(self.op))
-        self.left.printTree(indent+1)
-        self.right.printTree(indent+1)
+    # @addToClass(AST.RelExpr)
+    # def printTree(self, indent=0):
+    #     print("| " * indent + str(self.op))
+    #     self.left.printTree(indent+1)
+    #     self.right.printTree(indent+1)
     
     @addToClass(AST.AssignExpr)
     def printTree(self, indent=0):
@@ -67,6 +66,7 @@ class TreePrinter:
         self.cond.printTree(indent+1)
         print("| " * indent + "THEN")
         self.true.printTree(indent+1)
+
     @addToClass(AST.IfElseExpr)
     def printTree(self, indent=0):
         print("| " * indent + "IF")
@@ -75,6 +75,7 @@ class TreePrinter:
         self.true.printTree(indent+1)
         print("| " * indent + "ELSE")
         self.false.printTree(indent+1)
+
     @addToClass(AST.WhileExpr)
     def printTree(self, indent=0):
         print("| " * indent + "WHILE")
@@ -126,11 +127,7 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + "RETURN")
         self.expr.printTree(indent+1)
-    
-    @addToClass(AST.Op)
-    def printTree(self, indent=0):
-        print("| " * indent + str(self.op))\
-        
+
     @addToClass(AST.MatrixCreate)
     def printTree(self, indent=0):
         print("| " * indent + str(self.type))
