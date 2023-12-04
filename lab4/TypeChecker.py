@@ -1,5 +1,5 @@
 import AST
-from SymbolTable import Type, Symbol
+from SymbolTable import Type, SymbolTable, VariableSymbol
 
 class NodeVisitor(object):
     def visit(self, node):
@@ -28,6 +28,7 @@ class NodeVisitor(object):
 class TypeChecker(NodeVisitor):
     def __init__(self):
         self.found_error = False
+        self.symbol_table = SymbolTable(None, "program scope")
     # def visit_BinExpr(self, node):
     #                                       # alternative usage,
     #                                       # requires definition of accept method in class Node
@@ -102,7 +103,6 @@ class TypeChecker(NodeVisitor):
 
         if node.indices.type != Type.INTNUM:
             self.error(node.position, "array indices must be a list of integers.")
-
         #Check if variable exist and type, return that type
         #return that type
         node.type = Type.INTNUM
@@ -123,23 +123,81 @@ class TypeChecker(NodeVisitor):
             #Check sizes types can  change if numeric
             node.type = Type.MATRIX
         elif node.op in ['+', '-', '*', '/']:
-            if node.left.type != Type.
-        
-        
+            if (not Type.is_numeric(node.left.type)) or (not Type.is_numeric(node.right.type)):
+                self.error(node.position, "operands must be numeric.")
+                return 
+            if node.left.type == Type.FLOATNUM or node.right.type == Type.FLOATNUM:
+                node.type = Type.FLOATNUM
+            else:
+                node.type = Type.INTNUM
 
+    def visit_AssignExpr(self, node):
+        self.visit(node.left)
+        self.visit(node.right)
 
-        
+        if type(node.left) is AST.Variable:
+            self.symbol_table.put(node.left.name, VariableSymbol(node.left.name, node.right.type))
+            return #mogloby zwracac typ
+        elif type(node.left) is AST.ArrayElement:
+            if self.symbol_table.get(node.left.name) is None:
+                self.error(node.position, "matrix not initialized.")
+                return 
+            
+    def visit_UnaryExpr(self, node):
+        self.visit(node.left)
 
+    def visit_IfElseExpr(self, node):
+        self.visit(node.cond)
+        self.visit(node.true)
+        self.visit(node.false)
 
-        #aritetic
+    def visit_IfExpr(self, node):
+        self.visit(node.cond)
+        self.visit(node.true)       
 
-        #assignment
+    def visit_WhileExpr(self, node):
+        self.visit(node.cond)
+        self.visit(node.body)
 
+    def visit_ForExpr(self, node):
+        self.visit(node.var)
+        self.visit(node.range)
+        self.visit(node.body)
+
+    def visit_BreakStmt(self, node):
+        return
+    
+    def visit_ContinueStmt(self, node):
         pass
 
+    def visit_ReturnStmt(self, node):
+        self.visit(node.expr)
 
-        
+    def visit_PrintStmt(self, node):
+        self.visit(node.expr)
 
-        
+    def visit_CompoundStmt(self, node):
+        self.visit(node.expr)
+            
+    def visit_RangeExpr(self, node):
+        self.visit(node.start)
+        self.visit(node.end)
 
+    def visit_ListExpr(self, node):
+        for e in node.expr:
+            self.visit(e)
+
+    def visit_ListInstr(self, node):
+        for i in node.instr:
+            self.visit(i)
+
+    def visit_MatrixCreate(self, node):
+        self.visit(node.size)
+            
+    def visit_Transposition(self, node):
+        self.visit(node.expr)
+
+    def visit_List(self, node):
+        self.visit(node.expr)
+            
 

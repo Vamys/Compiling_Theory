@@ -35,7 +35,7 @@ class BinExpr(Node):
         self.right = right
 
 class UnaryExpr(Node):
-    def __init__(self, left,op, position):
+    def __init__(self, left, op, position):
         super().__init__(position)
         self.op = op
         self.left = left
