@@ -29,6 +29,7 @@ class TypeChecker(NodeVisitor):
     def __init__(self):
         self.found_error = False
         self.symbol_table = SymbolTable(None, "program scope")
+        
     # def visit_BinExpr(self, node):
     #                                       # alternative usage,
     #                                       # requires definition of accept method in class Node
