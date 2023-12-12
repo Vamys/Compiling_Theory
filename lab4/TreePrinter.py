@@ -131,7 +131,7 @@ class TreePrinter:
     @addToClass(AST.MatrixCreate)
     def printTree(self, indent=0):
         print("| " * indent + str(self.type))
-        self.size.printTree(indent+1)
+        self.arg.printTree(indent+1)
 
     @addToClass(AST.List)
     def printTree(self, indent=0):

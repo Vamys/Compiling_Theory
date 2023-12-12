@@ -29,60 +29,6 @@ class TypeChecker(NodeVisitor):
     def __init__(self):
         self.found_error = False
         self.symbol_table = SymbolTable(None, "program scope")
-        
-    # def visit_BinExpr(self, node):
-    #                                       # alternative usage,
-    #                                       # requires definition of accept method in class Node
-    #     type1 = self.visit(node.left)     # type1 = node.left.accept(self) 
-    #     type2 = self.visit(node.right)    # type2 = node.right.accept(self)
-    #     op    = node.op
-    #     if type1 == type2 and type1 in ['int', 'float']:
-    #         if op in ['+', '-', '*', '/']:
-    #             return type1
-    #         elif op in ['<', '>', '==', '!=']:
-    #             return 'bool'
-    #         else:
-    #             print("Unsupported operator")
-    #             return 'error'
-    #     elif (type1 == "int" and type2 == "float") or (type1 == "float" and type2 == "int"):
-    #         if op in ['+', '-', '*', '/']:
-    #             return 'float'
-    #         elif op in ['<', '>', '==', '!=']:
-    #             return 'bool'
-    #         else:
-    #             print("Unsupported operator")
-    #             return 'error'
-    #     elif type1 == type2 and type1 in ['bool']:
-    #         if op in ['==', '!=']:
-    #             return 'bool'
-    #         else:
-    #             print("Unsupported operator")
-    #             return 'error'
-    #     elif type(type1) == type(type2) == tuple and type1[0] == type2[0] == 'list': #('list','int' or 'float', size x, sizy y)
-    #         if op in ['.+', '.-', '.*', './']:
-    #             if type1[2] != type2[2] or type1[3] != type2[3]:
-    #                 print("Unsupported shape")
-    #                 return 'error'
-    #             elif type1[1] == type2[1]:
-    #                 return type1
-    #             return ('list', 'float', type1[2], type1[3])
-    #         elif op == '*':
-    #             if type1[2] != type2[3]:
-    #                 print("Unsupported shape")
-    #                 return 'error'
-    #             elif type1[1] == type2[1]:
-    #                 return ('list', type1[1], type1[2], type2[3])
-    #             return ('list', 'float', type1[2], type2[3])
-    #         elif op == '/':
-    #             if type1[2] != type2[2] or type1[3] != type2[3]:
-    #                 print("Unsupported shape")
-    #                 return 'error'
-    #             elif type1[1] == type2[1]:
-    #                 return ('list', type1[1], type1[2], type1[3])
-    #             return ('list', 'float', type1[2], type1[3])
-    #     else:
-    #         print("Unsupported type")
-    #         return 'error'
 
     def error(self, position, desc):
         self.found_error = True
@@ -95,34 +41,39 @@ class TypeChecker(NodeVisitor):
         node.type = Type.FLOATNUM
 
     def visit_Variable(self, node):
+        sym = self.symbol_table.get(node.name)
+        if sym is not None:
+            node.type = sym.type
+            node.size = sym.size
+            return
         node.type = Type.UNKNOWN
     
     def visit_ArrayElement(self, node):
         self.visit(node.indices)
-        if node.indices.type != Type.LIST:
+        if node.indices.type != Type.VECTOR:
             self.error(node.position, "array indices must be list.")
-
         if node.indices.type != Type.INTNUM:
             self.error(node.position, "array indices must be a list of integers.")
-        #Check if variable exist and type, return that type
-        #return that type
         node.type = Type.INTNUM
 
     def visit_BinExpr(self, node):
         self.visit(node.left)
         self.visit(node.right)
-        # logic
-        if node.op in ['LE', 'GE', 'NE', 'EQ', '<', '>']:
-            if node.left.type != Type.BOOLEAN or node.right.type != Type.BOOLEAN:
-                self.error(node.position, "operands in logic expression must be booleans.")
+        if node.op in ['<=', '>=', '!=', '==', '<', '>']:
+            if not Type.is_numeric(node.left.type) or not Type.is_numeric(node.right.type):
+                self.error(node.position, "operands in expression must be numeric.")
+                node.type = Type.BOOLEAN
                 return 
             node.type = Type.BOOLEAN
-        elif node.op in ['DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV']:
+        elif node.op in ['.+', '.-', '.*', './']:
             if node.left.type != Type.MATRIX or node.right.type != Type.MATRIX:
                 self.error(node.position, "operands must be matrices.")
                 return 
-            #Check sizes types can  change if numeric
+            if node.left.size != node.right.size:
+                self.error(node.position, "matrices must have equal size.")
+                return
             node.type = Type.MATRIX
+            node.size = node.left.size
         elif node.op in ['+', '-', '*', '/']:
             if (not Type.is_numeric(node.left.type)) or (not Type.is_numeric(node.right.type)):
                 self.error(node.position, "operands must be numeric.")
@@ -131,14 +82,18 @@ class TypeChecker(NodeVisitor):
                 node.type = Type.FLOATNUM
             else:
                 node.type = Type.INTNUM
+        #BRAKUJE MNOZENIA MACIERZY
 
     def visit_AssignExpr(self, node):
         self.visit(node.left)
         self.visit(node.right)
 
         if type(node.left) is AST.Variable:
-            self.symbol_table.put(node.left.name, VariableSymbol(node.left.name, node.right.type))
-            return #mogloby zwracac typ
+            if node.right.type is Type.MATRIX:
+                self.symbol_table.put(node.left.name, VariableSymbol(node.left.name, Type.MATRIX, node.right.size))
+                return 
+            self.symbol_table.put(node.left.name, VariableSymbol(node.left.name, node.right.type, None))
+            return
         elif type(node.left) is AST.ArrayElement:
             if self.symbol_table.get(node.left.name) is None:
                 self.error(node.position, "matrix not initialized.")
@@ -146,6 +101,7 @@ class TypeChecker(NodeVisitor):
             
     def visit_UnaryExpr(self, node):
         self.visit(node.left)
+        node.type = node.left.type
 
     def visit_IfElseExpr(self, node):
         self.visit(node.cond)
@@ -193,12 +149,21 @@ class TypeChecker(NodeVisitor):
             self.visit(i)
 
     def visit_MatrixCreate(self, node):
-        self.visit(node.size)
+        self.visit(node.arg) #OTHER NAME
+        node.type = Type.MATRIX
+        node.size = (node.arg.value, node.arg.value)
             
     def visit_Transposition(self, node):
         self.visit(node.expr)
 
     def visit_List(self, node):
         self.visit(node.expr)
+        #checks to do
+        if Type.is_numeric(node.expr.expr[0].type):
+            node.type = Type.VECTOR
+            node.size = len(node.expr.expr)
+        if node.expr.expr[0].type == Type.VECTOR:
+            node.type = Type.MATRIX
+            node.size = (len(node.expr.expr), node.expr.expr[0].size)
             
 

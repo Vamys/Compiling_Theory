@@ -2,6 +2,7 @@ class Node(object):
     def __init__(self, position):
         self.position = position
         self.type = None
+        self.size = None
 
     def accept(self, visitor):
         return visitor.visit(self)
@@ -126,10 +127,11 @@ class ListInstr(Node):
         self.instr.append(new_instr)
 
 class MatrixCreate(Node):
-    def __init__(self, type , size, position):
+    def __init__(self, type , arg, position):
         super().__init__(position)
         self.type = type
-        self.size = size
+        self.arg = arg
+
 class Transposition(Node):
     def __init__(self, expr, position):
         super().__init__(position)

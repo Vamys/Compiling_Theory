@@ -4,7 +4,7 @@ class Type(Enum):
     INTNUM = auto()
     FLOATNUM = auto()
     STRING = auto()
-    LIST = auto()
+    VECTOR = auto()
     MATRIX = auto()
     BOOLEAN = auto()
     RANGE = auto()
@@ -19,12 +19,17 @@ class Symbol:
     pass
 
 class VariableSymbol(Symbol):
-
-    def __init__(self, name, type):
+    def __init__(self, name, type, size):
         self.name = name
         self.type = type
-    #
+        self.size = size
 
+# class MatrixSymbol():
+#     def __init__(self, name, type, n, m):
+#         self.name = name
+#         self.type = type
+#         self.n = n
+#         self.m = m
 
 #link lista scopow
 class SymbolTable(object):
@@ -38,7 +43,7 @@ class SymbolTable(object):
 
     def print_scope(self):
         for k in self.scope:
-            print(k, " type: ", self.scope[k].type)
+            print(k, " type: ", self.scope[k].type, " size: ", self.scope[k].size)
 
     def put(self, name, symbol): # put variable symbol or fundef under <name> entry
         self.scope[name] = symbol
