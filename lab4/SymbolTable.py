@@ -57,20 +57,18 @@ class SymbolTable(object):
         if self.parent is not None:
             return self.parent.get(name)
         return None
-    #
 
-    # def getParentScope(self):
-    #     return self.parent
-    #     #pass
-    #
+    def is_loop(self):
+        if self.name == "loop":
+            return True
+        if self.parent == None:
+            return False
+        return self.parent.is_loop()
 
     def pushScope(self, name):
         return SymbolTable(self, name)
-        #pass
-    #
 
     def popScope(self):
         return self.parent
-        #pass
-    #
+
 

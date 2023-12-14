@@ -85,9 +85,9 @@ def p_expression(p):
                   | expression '>' expression
                   | '(' expression ')'
                   | '[' expression_list ']'
-                  | ZEROS '(' expression ')'
-                  | ONES '(' expression ')'
-                  | EYE '(' expression ')'
+                  | ZEROS '(' expression_list ')'
+                  | ONES '(' expression_list ')'
+                  | EYE '(' expression_list ')'
                   | '!' expression
                   | '-' expression %prec UMINUS
                   | ID
@@ -107,6 +107,8 @@ def p_expression(p):
     elif len(p) == 3:
         if p[1] == '!' or p[1] == '-':
             p[0] = AST.UnaryExpr(p[2], p[1], p.lexer.lineno) #operator on the left
+        elif p[2] == '\'':
+             p[0] = AST.Transposition(p[1], p.lexer.lineno) #operator on the left
         else:
             p[0] = AST.UnaryExpr(p[1], p[2], p.lexer.lineno)
     elif len(p) == 4:
@@ -117,7 +119,10 @@ def p_expression(p):
         else:
             p[0] = AST.BinExpr(p[2], p[1], p[3], p.lexer.lineno)
     elif len(p) == 5:
-        p[0] = AST.MatrixCreate(p[1], p[3], p.lexer.lineno)
+        if p[4] == ']':
+            p[0] = AST.ArrayElement(p[1], AST.List(p[3], p.lexer.lineno), p.lexer.lineno)
+        else:
+            p[0] = AST.MatrixCreate(p[1], AST.List(p[3], p.lexer.lineno), p.lexer.lineno)
 
 
 def p_assigment(p):
@@ -132,7 +137,7 @@ def p_lvalue(p):
     """lvalue : ID
               | ID '[' expression_list ']' 
               """
-    p[0] = AST.Variable(p[1], p.lexer.lineno) if len(p) == 2 else AST.ArrayElement(AST.Variable(p[1], p.lexer.lineno), p[3], p.lexer.lineno)
+    p[0] = AST.Variable(p[1], p.lexer.lineno) if len(p) == 2 else AST.ArrayElement(p[1], AST.List(p[3], p.lexer.lineno), p.lexer.lineno)
 
 def p_expression_list(p):
     """expression_list : expression
@@ -163,7 +168,7 @@ def p_range(p):
 
 def p_for_statement(p):
    """for_statement : FOR ID '=' range instruction""" 
-   p[0] = AST.ForExpr(AST.Variable(p[2], p.lexer.lineno), p[4], p[5], p.lexer.lineno)
+   p[0] = AST.ForExpr(p[2], p[4], p[5], p.lexer.lineno)
 
 def p_break_statement(p):
    """break_statement : BREAK"""

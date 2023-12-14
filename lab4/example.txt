@@ -20,6 +20,9 @@ res3 = .500;
 res4 = 60.52E2;
 str = "Hello world"; str2 = "foo";
 
+n = 5;
+m = 5;
+
 if (m==n) { 
     if (m >= n) 
         print res;

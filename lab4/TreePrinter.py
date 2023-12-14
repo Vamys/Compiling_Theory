@@ -34,7 +34,8 @@ class TreePrinter:
     @addToClass(AST.ArrayElement)
     def printTree(self, indent=0):
         print("| " * indent + "ARRAY ELEMENT")
-        self.name.printTree(indent + 1)
+        print("| " * (indent + 1) + str(self.name))
+        #self.name.printTree(indent + 1)
         self.indices.printTree(indent+1)
     
     @addToClass(AST.BinExpr)
@@ -85,7 +86,8 @@ class TreePrinter:
     @addToClass(AST.ForExpr)
     def printTree(self, indent=0):
         print("| " * indent + "FOR")
-        self.var.printTree(indent+1)
+        print("| " * (indent + 1) + self.var)
+        #self.var.printTree(indent+1)
         self.range.printTree(indent+1)
         self.body.printTree(indent+1)
     
@@ -136,4 +138,9 @@ class TreePrinter:
     @addToClass(AST.List)
     def printTree(self, indent=0):
         print("| " * indent + "LIST")
+        self.expr.printTree(indent+1)
+
+    @addToClass(AST.Transposition)
+    def printTree(self, indent=0):
+        print("| " * indent + "TRANSPOSITION")
         self.expr.printTree(indent+1)
