@@ -1,7 +1,7 @@
 
 import sys
 import ply.yacc as yacc
-import Mparser
+import Mparser as Mparser
 import scanner
 import AST
 from TreePrinter import TreePrinter
@@ -19,6 +19,7 @@ if __name__ == '__main__':
  
     parser = Mparser.parser
     text = file.read()
+    print(text)
     ast = parser.parse(text, lexer=scanner.lexer)
    
     ast.printTree()

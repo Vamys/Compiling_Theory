@@ -92,6 +92,7 @@ def p_expression(p):
                   | '-' expression %prec UMINUS
                   | ID
                   | ID '[' expression_list ']'
+                  | expression ':' expression
                   | INTNUM
                   | FLOATNUM
                   | STRING
@@ -113,9 +114,13 @@ def p_expression(p):
             p[0] = AST.UnaryExpr(p[1], p[2], p.lexer.lineno)
     elif len(p) == 4:
         if p[1] == '(':
+            print("dsdadasdsa")
+            print(p[2].right.value)
             p[0] = p[2]
         elif p[1] == '[':
             p[0] = AST.List(p[2], p.lexer.lineno)
+        elif p[2] == ':':
+            p[0] = AST.RangeExpr(p[1], p[3], p.lexer.lineno)
         else:
             p[0] = AST.BinExpr(p[2], p[1], p[3], p.lexer.lineno)
     elif len(p) == 5:
@@ -162,12 +167,9 @@ def p_while_statement(p):
    """while_statement : WHILE '(' expression ')' instruction"""
    p[0] = AST.WhileExpr(p[3], p[5], p.lexer.lineno)
 
-def p_range(p):
-    """range : expression ':' expression """
-    p[0] = AST.RangeExpr(p[1], p[3], p.lexer.lineno)
 
 def p_for_statement(p):
-   """for_statement : FOR ID '=' range instruction""" 
+   """for_statement : FOR ID '=' expression instruction""" 
    p[0] = AST.ForExpr(p[2], p[4], p[5], p.lexer.lineno)
 
 def p_break_statement(p):

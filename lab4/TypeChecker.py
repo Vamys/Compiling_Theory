@@ -46,6 +46,7 @@ class TypeChecker(NodeVisitor):
     def visit_ArrayElement(self, node):
         self.visit(node.indices)
         sym = self.symbol_table.get(node.name)
+        
         if sym is None:
                 self.error(node.position, "matrix not initialized.")
                 return 
@@ -53,15 +54,23 @@ class TypeChecker(NodeVisitor):
             self.error(node.position, "must be a matrix.")
             return 
         if node.indices.type != Type.VECTOR:
+            print('aaaa',node.indices.expr.expr)
             self.error(node.position, "array indices must be list.")
             return
-        if node.indices.expr.expr[0].type != Type.INTNUM: # sparawdzenie wszytskich
+        if node.indices.expr.expr[0].type != Type.INTNUM and node.indices.expr.expr[0].type != Type.RANGE: # sparawdzenie wszytskich
             self.error(node.position, "array indices must be intnums")
             return
         if len(node.indices.expr.expr) != 2:
             self.error(node.position, "wrong dimensions.")
             return
-        if node.indices.expr.expr[0].value >= sym.size[0] or node.indices.expr.expr[1].value >= sym.size[1]:
+        if node.indices.expr.expr[0].type == Type.RANGE:
+            if node.indices.expr.expr[0].start.value >= sym.size[0] or node.indices.expr.expr[0].end.value > sym.size[0]:
+                self.error(node.position, "wrong indices.")
+                return
+            if node.indices.expr.expr[1].start.value >= sym.size[1] or node.indices.expr.expr[1].end.value > sym.size[1]:
+                self.error(node.position, "wrong indices.")
+                return
+        elif node.indices.expr.expr[0].value >= sym.size[0] or node.indices.expr.expr[1].value >= sym.size[1]:
             self.error(node.position, "wrong indices.")
             return
         node.type = Type.INTNUM
@@ -178,6 +187,7 @@ class TypeChecker(NodeVisitor):
         self.visit(node.expr)
             
     def visit_RangeExpr(self, node):
+        node.type = Type.RANGE
         self.visit(node.start)
         self.visit(node.end)
 
@@ -226,7 +236,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_List(self, node):
         self.visit(node.expr)
-        if Type.is_numeric(node.expr.expr[0].type):
+        if Type.is_numeric(node.expr.expr[0].type) or node.expr.expr[0].type == Type.RANGE:
             node.type = Type.VECTOR
             node.size = len(node.expr.expr)
         if node.expr.expr[0].type == Type.VECTOR:
@@ -237,5 +247,6 @@ class TypeChecker(NodeVisitor):
                     return         
             node.type = Type.MATRIX
             node.size = (len(node.expr.expr), node.expr.expr[0].size)
+        
             
 
