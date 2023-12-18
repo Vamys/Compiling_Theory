@@ -24,33 +24,21 @@ class VariableSymbol(Symbol):
         self.type = type
         self.size = size
 
-# class MatrixSymbol():
-#     def __init__(self, name, type, n, m):
-#         self.name = name
-#         self.type = type
-#         self.n = n
-#         self.m = m
-
-#link lista scopow
 class SymbolTable(object):
 
-    def __init__(self, parent, name): # parent scope and symbol table name
+    def __init__(self, parent, name): 
         self.parent = parent
         self.name = name
         self.scope = {}
-        #pass
-    #
 
     def print_scope(self):
         for k in self.scope:
             print(k, " type: ", self.scope[k].type, " size: ", self.scope[k].size)
 
-    def put(self, name, symbol): # put variable symbol or fundef under <name> entry
+    def put(self, name, symbol):
         self.scope[name] = symbol
-        #pass
-    #
 
-    def get(self, name): # get variable symbol or fundef from <name> entry
+    def get(self, name): 
         var_symbol = self.scope.get(name)
         if var_symbol is not None:
             return var_symbol
