@@ -129,7 +129,6 @@ class TypeChecker(NodeVisitor):
                 return
         
         self.error(node.position, "wrong operands")
-        #BRAKUJE MNOZENIA MACIERZY
 
     def visit_AssignExpr(self, node):
         self.visit(node.left)
@@ -236,8 +235,6 @@ class TypeChecker(NodeVisitor):
         node.size = (0,0)
         self.error(node.position, "wrong arguments.")
         return 
-        #node.type = Type.MATRIX
-        #node.size = (node.arg.value, node.arg.value)
             
     def visit_Transposition(self, node):
         self.visit(node.expr)
