@@ -12,3 +12,8 @@ for n = 2:100 {
         print n;
     }
 }
+
+for n = 2:10 {
+    print n;
+    break;
+}

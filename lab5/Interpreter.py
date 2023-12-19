@@ -132,7 +132,12 @@ class Interpreter(object):
     def visit(self, node): #zleee
         self.memory.push(Memory("while loop"))
         while node.cond.accept(self):
-            node.body.accept(self)
+            try:
+                node.body.accept(self)
+            except BreakException:
+                break
+            except ContinueException:
+                continue
         self.memory.pop()
 
     @when(AST.ForExpr)
@@ -144,19 +149,24 @@ class Interpreter(object):
         self.memory.push(Memory("for loop"))
         self.memory.set(iterator, loop_range[0])
         while self.memory.get(iterator) in loop_range:
-            node.body.accept(self)
-            self.memory.set(iterator, self.memory.get(iterator) + 1)
+            try:
+                node.body.accept(self)
+            except BreakException:
+                break
+            except ContinueException:
+                continue
+            finally:
+                self.memory.set(iterator, self.memory.get(iterator) + 1)
         self.memory.pop()
 
     @when(AST.BreakStmt)
     def visit(self, node):
-        if self.memory.get_scope() == 'while loop' or self.memory.get_scope() == 'for loop':
-            raise BreakException()
+        raise BreakException()
+        
     
     @when(AST.ContinueStmt)
     def visit(self, node):
-        if self.memory.get_scope() == 'while loop' or self.memory.get_scope() == 'for loop':
-            raise ContinueException()
+        raise ContinueException()
     
     @when(AST.ReturnStmt)
     def visit(self, node):

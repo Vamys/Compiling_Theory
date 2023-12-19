@@ -135,11 +135,6 @@ def p_string (p):
               """
     if len(p) == 2:
         p[0] = AST.String(p[1], p.lexer.lineno)
-    elif len(p) == 4:
-        if p[2] == '+':
-            p[0] = AST.BinExpr(p[2], p[1], p[3], p.lexer.lineno)
-        elif p[2] == '*':
-            p[0] = AST.BinExpr(p[2], p[1], p[3], p.lexer.lineno)
 
 def p_assigment(p):
     """assignment : lvalue '=' expression
