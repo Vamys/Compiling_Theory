@@ -109,9 +109,9 @@ def p_expression(p):
             p[0] = AST.Variable(p[1], p.lexer.lineno)    
     elif len(p) == 3:
         if p[1] == '!' or p[1] == '-':
-            p[0] = AST.UnaryExpr(p[2], p[1], p.lexer.lineno) #operator on the left
+            p[0] = AST.UnaryExpr(p[2], p[1], p.lexer.lineno)
         elif p[2] == '\'':
-             p[0] = AST.Transposition(p[1], p.lexer.lineno) #operator on the left
+             p[0] = AST.Transposition(p[1], p.lexer.lineno)
         else:
             p[0] = AST.UnaryExpr(p[1], p[2], p.lexer.lineno)
     elif len(p) == 4:

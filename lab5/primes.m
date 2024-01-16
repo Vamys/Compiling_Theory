@@ -13,7 +13,3 @@ for n = 2:100 {
     }
 }
 
-for n = 2:10 {
-    print n;
-    break;
-}

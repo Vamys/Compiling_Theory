@@ -70,9 +70,6 @@ class TypeChecker(NodeVisitor):
             if node.indices.expr.expr[1].start.value >= sym.size[1] or node.indices.expr.expr[1].end.value > sym.size[1]:
                 self.error(node.position, "wrong indices.")
                 return
-        elif node.indices.expr.expr[0].value >= sym.size[0] or node.indices.expr.expr[1].value >= sym.size[1]:
-            self.error(node.position, "wrong indices.")
-            return
         node.type = Type.INTNUM
 
     def visit_BinExpr(self, node):

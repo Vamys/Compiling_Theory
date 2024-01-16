@@ -65,16 +65,21 @@ class Interpreter(object):
     def visit(self, node):
         matrix = self.memory.get(node.name)
         indices = node.indices.accept(self)
+        if indices[0] < 0 or indices[1] < 0 or indices[0] >= len(matrix) or indices[1] >= len(matrix[0]):
+            raise Exception("Index out of range")
         return matrix[indices[0]][indices[1]]
     
     @when(AST.BinExpr)
     def visit(self, node):
         r1 = node.left.accept(self)
         r2 = node.right.accept(self)
-        # try sth smarter than:
-        # if(node.op=='+') return r1+r2
-        # elsif(node.op=='-') ...
-        # but do not use python eval
+        if isinstance(r1, list) and isinstance(r2, list) and node.op == '*':
+            result = [[0 for _ in range(len(r2[0]))] for _ in range(len(r1))]
+            for i in range(len(r1)):
+                for j in range(len(r2[0])):
+                    for k in range(len(r2)):
+                        result[i][j] += r1[i][k] * r2[k][j]
+            return result
         return operators[node.op](r1,r2)
 
     @when(AST.UnaryExpr)
@@ -82,8 +87,6 @@ class Interpreter(object):
         r1 = node.left.accept(self)
         if node.op == '-':
             return -r1
-        elif node.op == '\'':
-            return r1.T() #to do
         elif node.op == '!':
             return not r1
         return operators[node.op](r1)
@@ -96,7 +99,6 @@ class Interpreter(object):
             if node.op == '=':
                 self.memory.set(node.left.name, r1)
             else:
-                # print('a = ',self.memory.get(node.left.name),'b = ',r1)
                 self.memory.set(node.left.name, operators[node.op](self.memory.get(node.left.name), r1))
         elif type(node.left) is AST.ArrayElement:
             matrix = self.memory.get(node.left.name)
@@ -113,11 +115,13 @@ class Interpreter(object):
         cond = node.cond.accept(self)
         if cond:
             self.memory.push(Memory("if"))
-            node.true.accept(self)
-            self.memory.pop()
         else:
             self.memory.push(Memory("else"))
+        try:
             node.false.accept(self)
+        except BreakException or ContinueException:
+            raise("Break or continue not in loop")
+        finally:
             self.memory.pop()
     
     @when(AST.IfExpr)
@@ -125,8 +129,12 @@ class Interpreter(object):
         cond = node.cond.accept(self)
         if cond:
             self.memory.push(Memory("if"))
-            node.true.accept(self)
-            self.memory.pop()
+            try:
+                node.true.accept(self)
+            except BreakException or ContinueException:
+                raise("Break or continue not in loop")
+            finally:
+                self.memory.pop()
             
     @when(AST.WhileExpr)
     def visit(self, node): #zleee
@@ -205,8 +213,6 @@ class Interpreter(object):
             instruction.accept(self)
             # print('------------------')
         return temp
-
-        return [instruction.accept(self) for instruction in node.instr]
     
     @when(AST.MatrixCreate)
     def visit(self, node):
@@ -226,7 +232,7 @@ class Interpreter(object):
     
     @when(AST.Transposition)
     def visit(self, node):
-        matrix = node.matrix.accept(self)
+        matrix = node.expr.accept(self)
         return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
     
     @when(AST.List)
